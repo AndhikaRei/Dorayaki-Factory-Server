@@ -33,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'pending',
         allowNull: false,
       },
+      recognized : {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: '0'
+      },
     },
     {
       sequelize,
