@@ -9,9 +9,11 @@ app.use(express.json());
 
 const ingredientRouter = require('./routes/ingredient');
 const requestRouter = require('./routes/request');
+const recipesRouter = require('./routes/recipe');
 
 app.use('/api/v1/ingredients', ingredientRouter);
 app.use('/api/v1/requests', requestRouter);
+app.use('/api/v1/recipes', recipesRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`)
