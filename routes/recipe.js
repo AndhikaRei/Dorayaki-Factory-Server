@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const db = require('../models/db');
+const auth = require('../middlewares/auth');
 
 // GET
 // Get all recipes
-router.route('/').get((req, res) => {
+router.route('/').get(auth, (req, res) => {
   db.recipes.findAll()
     .then((recipes) => {
       res.status(200).json(recipes);
@@ -12,7 +13,7 @@ router.route('/').get((req, res) => {
 });
 
 // Get all recipe name
-router.route('/names').get((req, res) => {
+router.route('/names').get(auth, (req, res) => {
   db.recipes.findAll({attributes : ['name']})
     .then((recipes) => {
       res.status(200).json(recipes);
@@ -22,7 +23,7 @@ router.route('/names').get((req, res) => {
 
 // POST
 // Create new recipe.
-router.route('/').post((req, res) => {
+router.route('/').post(auth, (req, res) => {
   const name = req.body.name;
 
   db.ingredients.findAll({attributes: ['id', 'name']})

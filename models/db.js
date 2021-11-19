@@ -27,6 +27,7 @@ db.recipeIngredients = require("./recipe_ingredient.model.js")(sequelize, Sequel
 db.ingredients = require("./ingredient.model.js")(sequelize, Sequelize.DataTypes);
 db.requests = require("./request.model.js")(sequelize, Sequelize.DataTypes);
 db.requestLogs = require("./request_log.model.js")(sequelize, Sequelize.DataTypes);
+db.users = require("./user.model.js")(sequelize, Sequelize.DataTypes);
 
 sequelize
   .authenticate()

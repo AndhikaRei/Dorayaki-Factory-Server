@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const db = require('../models/db');
+const auth = require('../middlewares/auth');
 
 // GET
 // Get all ingredients
-router.route('/').get((req, res) => {
+router.route('/').get(auth, (req, res) => {
   db.ingredients.findAll()
     .then((ingredients) => {
       res.status(200).json(ingredients);
@@ -12,7 +13,7 @@ router.route('/').get((req, res) => {
 });
 
 // Get ingredient by id
-router.route('/:id').get((req, res) => {
+router.route('/:id').get(auth, (req, res) => {
   db.ingredients.findByPk(req.params.id)
     .then((ingredient) => {
       res.status(200).json(ingredient);
@@ -23,7 +24,7 @@ router.route('/:id').get((req, res) => {
 
 // POST
 // Create new ingredient
-router.route('/').post((req, res) => {
+router.route('/').post(auth, (req, res) => {
   const name = req.body.name;
   const stock = req.body.stock;
 
@@ -35,7 +36,7 @@ router.route('/').post((req, res) => {
 
 // PATCH
 // Update existing ingredient
-router.route('/:id').patch((req, res) => {
+router.route('/:id').patch(auth, (req, res) => {
 
   db.ingredients.update(req.body, {
     where: {

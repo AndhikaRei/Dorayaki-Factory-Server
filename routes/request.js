@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const db = require('../models/db');
+const auth = require('../middlewares/auth');
 
 // GET
 // Get all requests
-router.route('/').get((req, res) => {
+router.route('/').get(auth, (req, res) => {
   db.requests.findAll()
     .then((requests) => {
       res.status(200).json(requests);
@@ -12,7 +13,7 @@ router.route('/').get((req, res) => {
 });
 
 // Get request by id
-router.route('/:id').get((req, res) => {
+router.route('/:id').get(auth, (req, res) => {
     db.requests.findByPk(req.params.id)
       .then((request) => {
         res.status(200).json(request);
@@ -22,7 +23,7 @@ router.route('/:id').get((req, res) => {
 
 // POST
 // Create new requests
-router.route('/').post((req, res) => {
+router.route('/').post(auth, (req, res) => {
     const name = req.body.name;
     const amount = req.body.amount;
     const ip = req.body.ip;
@@ -37,7 +38,7 @@ router.route('/').post((req, res) => {
 
 // PATCH
 // Update existing request
-router.route('/:id').patch((req, res) => {
+router.route('/:id').patch(auth, (req, res) => {
 
   db.requests.update(req.body, {
     where: {
