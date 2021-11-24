@@ -13,7 +13,7 @@ router.route('/').get(auth, (req, res) => {
 });
 
 // Get all recipe name
-router.route('/names').get(auth, (req, res) => {
+router.route('/names').get((req, res) => {
   db.recipes.findAll({attributes : ['name']})
     .then((recipes) => {
       res.status(200).json(recipes);

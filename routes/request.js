@@ -23,7 +23,7 @@ router.route('/:id').get(auth, (req, res) => {
 
 // POST
 // Create new requests
-router.route('/').post(auth, (req, res) => {
+router.route('/').post((req, res) => {
     const name = req.body.name;
     const amount = req.body.amount;
     const ip = req.body.ip;
