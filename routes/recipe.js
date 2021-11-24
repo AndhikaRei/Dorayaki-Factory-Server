@@ -30,17 +30,20 @@ router.route('/:id').get(auth, (req, res) => {
           id: req.params.id,
         },
         raw : true,
-      }).then((resIng)=>{
-          //TODO ini cara haram kayaknya HEHEHE, kalo ada cara yg lebih baik ganti aja :)
-          for (let i = 0; i < resIng.length; i++) {
-            db.ingredients.findByPk(resIng[i].ingredient).then((ingre)=>{resIng[i].name = ingre.name
-              if(i==resIng.length-1){
-                res.status(200).json({recipe:recipe, ingredients:resIng});
-              }
-            })
-          }
-        }).catch(err => res.status(400).json({error: err}))
+      }).then(async (resIng)=> {
+        for (const [i,e] of resIng.entries()) {
+          const namaIngredients = await db.ingredients.findByPk(e.ingredient,{
+            attributes: ['name'],
+            include: [],
+            raw: true,
+          });
+          const completeData = { ...e, ...namaIngredients};
+          resIng[i] = completeData;
+        }
+        res.status(200).json({recipe:recipe, ingredients:resIng});
       })
+      .catch(err => res.status(400).json({error: err}))
+    })
     .catch(err => res.status(400).json({error: err}));
 });
 
