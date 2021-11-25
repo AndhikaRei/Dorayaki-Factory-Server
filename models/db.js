@@ -29,6 +29,9 @@ db.requests = require("./request.model.js")(sequelize, Sequelize.DataTypes);
 db.requestLogs = require("./request_log.model.js")(sequelize, Sequelize.DataTypes);
 db.users = require("./user.model.js")(sequelize, Sequelize.DataTypes);
 
+db.recipeIngredients.belongsTo(db.recipes, {foreignKey: 'id'});
+db.recipeIngredients.belongsTo(db.ingredients, {foreignKey: 'ingredient'});
+
 sequelize
   .authenticate()
   .then(() => {
