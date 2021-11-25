@@ -29,7 +29,7 @@ router.route('/').post(auth, (req, res) => {
   const stock = req.body.stock;
 
   db.ingredients.create({name: name, stock: stock})
-    .then((ingredient) => {res.status(200).json({id: ingredient.id})})
+    .then((ingredient) => {res.status(200).json({ingredient})})
     .catch(err => res.status(400).json({error: err}));
 });
 
@@ -43,7 +43,7 @@ router.route('/:id').patch(auth, (req, res) => {
       id: req.params.id
     }
   })
-    .then(() => {res.json("Ingredient updated")})
+    .then(() => {res.json("Ingredient successfully updated")})
     .catch(err => res.status(400).json({error: err}));
 });
 
