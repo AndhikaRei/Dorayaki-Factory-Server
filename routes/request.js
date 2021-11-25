@@ -38,9 +38,76 @@ router.route('/').post((req, res) => {
 
 // PATCH
 // Update existing request
-router.route('/:id').patch(auth, (req, res) => {
+router.route('/:id').patch(auth, async (req, res) => {
 
   db.requests.update(req.body, {
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(() => {res.json("Request updated")})
+    .catch(err => res.status(400).json({error: err}));
+});
+
+// Custom route
+// Decline a request
+router.route('/:id/decline').post(auth, async (req, res) => {
+  const request = await db.requests.findByPk(req.params.id, { 
+    raw: true 
+  });
+  if (request.status != 'pending') {
+    res.status(400).json({error: "Only pending stock can be declined"});
+    return;
+  }
+  db.requests.update({status: "declined"}, {
+    where: {
+      id: req.params.id
+    }
+  })
+  .then(() => {res.json("Request updated")})
+  .catch(err => res.status(400).json({error: err}));
+});
+
+// Accept a request
+router.route('/:id/accept').post(auth, async (req, res) => {
+  const request = await db.requests.findByPk(req.params.id, { 
+    raw: true 
+  });
+  if (request.status != 'pending') {
+    res.status(400).json({error: "Only pending stock can be accepted"});
+    return;
+  }
+  const recipe = await db.recipes.findOne({
+    where: {
+      name: request.dorayaki 
+    },
+    raw: true 
+  });
+  const indgredientNeeded = await db.recipeIngredients.findAll({
+    where: {
+      id: recipe.id,
+    },
+    raw : true,
+  });
+  const newIngredient = []
+  for (const e of indgredientNeeded) {
+    const ingredients = await db.ingredients.findByPk(e.ingredient,{
+      raw: true
+    });
+    if (ingredients.stock < e.count * request.count) {
+      res.status(400).json({error: "Stock is not enough"});
+      return;
+    }
+    newIngredient.push({id: e.ingredient, stock: ingredients.stock - e.count * request.count});
+  };
+  for (const ingredient of newIngredient) {
+    await db.ingredients.update({stock: ingredient.stock}, {
+      where: {
+        id: ingredient.id,
+      }
+    });
+  };
+  db.requests.update({status: "accepted"}, {
     where: {
       id: req.params.id
     }
