@@ -23,17 +23,21 @@ router.route('/:id').get(auth, (req, res) => {
 
 // POST
 // Create new requests
-router.route('/').post((req, res) => {
-    const name = req.body.name;
-    const amount = req.body.amount;
-    const ip = req.body.ip;
+router.route('/').post(async (req, res) => {
+  const name = req.body.name;
+  const amount = req.body.amount;
+  const ip = req.body.ip;
 
-    // TODO : Dorayaki name must exist in factory, otherwise error.
-    db.requests.create({ip: ip, dorayaki: name, count: amount})
-      .then((request) => {res.status(200).json({id: request.id})})
-      .catch(err => res.status(400).json({error: err}));
-    // TODO : Notify email.
-    // TODO : When failed to create make sure not notify email and return
+  const recipe = await db.recipes.findOne({ where: { name: name } });
+  if (recipe === null) {
+    res.status(400).json({error: "Dorayaki recipe not found"});
+    return;
+  }
+  db.requests.create({ip: ip, dorayaki: name, count: amount})
+    .then((request) => {res.status(200).json({id: request.id})})
+    .catch(err => res.status(400).json({error: err}));
+  // TODO : Notify email.
+  // TODO : When failed to create make sure not notify email and return
 });
 
 // PATCH
