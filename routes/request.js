@@ -1,6 +1,67 @@
 const router = require('express').Router();
 const db = require('../models/db');
 const auth = require('../middlewares/auth');
+const nodemailer = require('nodemailer')
+const {google} = require('googleapis')
+const CLIENT_ID = '981968699053-gdp57lnld5oqa22p58j3f5mheinrdc27.apps.googleusercontent.com'
+const CLIENT_SECRET = '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'
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground'
+const REFRESH_TOKEN = '1//04l34o81WathVCgYIARAAGAQSNwF-L9Ir1ocegpQLI1sAr6sptVmMzPA7T0XFXtb08aUESmuHjBrn9yf0vjHJgJ-Wn8sOZge3uos'
+
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
+oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN })
+
+async function sendMail(ip, dorayaki, amount){
+  try{
+    const accessToken = await oAuth2Client.getAccessToken()
+
+    const transport = nodemailer.createTransport({
+      service:'gmail',
+      auth:{
+        type:'OAuth2',
+        user: 'dorayummyfactory@gmail.com',
+        clientId : CLIENT_ID,
+        clientSecret : CLIENT_SECRET,
+        refreshToken : REFRESH_TOKEN,
+        accessToken : accessToken,
+      }
+    })
+    const textMessage = `
+    Hi Admin, DoraYummy Factory have a new stock addition request\n
+    Request Detail\n
+      IP Address: ${ip}\n
+      Dorayaki: ${dorayaki}\n
+      Amount: ${amount}\n
+    `
+    const htmlMessage = `
+    <h1>Hi Admin, DoraYummy Factory have a new stock addition request</h1>
+    <h3>Request Detail</h3>
+    <ul>
+      <li>IP Address: ${ip} </li>
+      <li>Dorayaki: ${dorayaki} </li>
+      <li>Amount: ${amount} </li>
+    </ul>
+    `
+    const mailList = [
+      '13519026@std.stei.itb.ac.id',
+      '13519043@std.stei.itb.ac.id',
+      '13519167@std.stei.itb.ac.id',
+    ];
+    const mailOptions = {
+      from: 'DoraYummy Factory <dorayummyfactory@gmail.com>',
+      to: mailList,
+      subject : "NEW STOCK ADDITION REQUEST ADDED",
+      text : textMessage,
+      html : htmlMessage
+    }
+
+    const result = await transport.sendMail(mailOptions)
+    return result;
+  }catch(error){
+    return error
+  }
+}
+
 
 // GET
 // Get all requests
@@ -34,9 +95,14 @@ router.route('/').post(async (req, res) => {
     return;
   }
   db.requests.create({ip: ip, dorayaki: name, count: amount})
-    .then((request) => {res.status(200).json({id: request.id})})
+    .then((request) => {
+      sendMail(ip, name, amount).then((result)=> {
+        console.log('Email sent...', result)
+        res.status(200).json({id: request.id})
+      }).catch(err => console.log(err));
+
+    })
     .catch(err => res.status(400).json({error: err}));
-  // TODO : Notify email.
   // TODO : When failed to create make sure not notify email and return
 });
 
