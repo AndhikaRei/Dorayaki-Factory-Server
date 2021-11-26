@@ -14,6 +14,10 @@ oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN })
 async function sendMail(ip, dorayaki, amount){
   try{
     const accessToken = await oAuth2Client.getAccessToken()
+    
+    let emails = await db.users.findAll({attributes : ['email'], raw: true})
+
+    emails = emails.map(email => email.email);
 
     const transport = nodemailer.createTransport({
       service:'gmail',
@@ -42,11 +46,7 @@ async function sendMail(ip, dorayaki, amount){
       <li>Amount: ${amount} </li>
     </ul>
     `
-    const mailList = [
-      '13519026@std.stei.itb.ac.id',
-      '13519043@std.stei.itb.ac.id',
-      '13519167@std.stei.itb.ac.id',
-    ];
+    const mailList = emails;
     const mailOptions = {
       from: 'DoraYummy Factory <dorayummyfactory@gmail.com>',
       to: mailList,
