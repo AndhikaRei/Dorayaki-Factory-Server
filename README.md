@@ -27,7 +27,8 @@ Dorayaki-Factory-Server merupakan Web Service berbasis protokol REST yang menyed
 ## Cara menjalankan
 1. Download dan install semua requirement yang dibutuhkan
 2. Clone repository ini
-3. Ketikkan command 
+3. Buat file `.env` berdasrakan `.env.example` dan isi datanya
+4. Ketikkan command 
 ```
 npm install
 npm start
@@ -80,7 +81,12 @@ npm start
 | timestamp   | datetime        |
 
 ## Pembagian Kerja
-
+1. Database Pabrik : 13519167
+2. Autentikasi Pengguna : 13519167
+3. Pengelolaan Request Penambahan Stok : 13519026, 13519043, 13519167
+4. Manajemen Resep : 13519043, 13519167
+5. Manajemen Bahan Baku : 13519167
+6. Notifikasi Email : 13519026, 13519167
 ## Endpoints
 ### Auth
 - POST /api/v1/auth/register
